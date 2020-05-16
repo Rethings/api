@@ -13,7 +13,6 @@ namespace Tests\Feature\Domains\App;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Rethings\Domains\App\App;
-use Rethings\Domains\App\Enums\AppStatus;
 use Rethings\Domains\Auth\ActorType;
 use Tests\AssertRethingsResource;
 use Tests\Concerns\HasJWT;
@@ -48,8 +47,8 @@ class DeactivateAppTest extends TestCase
             [],
             self::getUserAuthHeaders('user-01')
         );
-        $response->assertOk();
-        self::assertAppResource($response, 'Test App', AppStatus::INACTIVE);
+        $response->assertNoContent();
+        self::assertTrue(App::whereNotNull('deactivated_at')->whereId('app_01')->exists());
     }
 
     public function testNoAccess(): void

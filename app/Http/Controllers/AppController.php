@@ -13,6 +13,7 @@ namespace Rethings\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 use Rethings\Domains\App\Actions\CreateApp;
 use Rethings\Domains\App\Actions\DeactivateApp;
 use Rethings\Domains\App\Actions\RestoreApp;
@@ -80,14 +81,14 @@ class AppController extends Controller
         );
     }
 
-    public function destroy(DeactivateApp $action, string $appId): AppResource
+    public function destroy(DeactivateApp $action, string $appId): Response
     {
         $app = App::findOrFail($appId);
         $this->authorize('deactivate', $app, App::buildNotFoundException($appId));
 
-        return AppResource::make(
-            $action->execute($app)
-        );
+        $action->execute($app);
+
+        return response()->noContent();
     }
 
     public function restore(RestoreApp $action, string $appId)

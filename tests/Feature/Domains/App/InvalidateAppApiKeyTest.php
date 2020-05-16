@@ -14,7 +14,6 @@ namespace Tests\Feature\Domains\App;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Rethings\Domains\App\App;
 use Rethings\Domains\App\AppApiKey;
-use Rethings\Domains\App\Enums\AppApiKeyStatus;
 use Rethings\Domains\App\Enums\AppApiKeyType;
 use Rethings\Domains\Auth\ActorType;
 use Tests\AssertRethingsResource;
@@ -58,8 +57,13 @@ class InvalidateAppApiKeyTest extends TestCase
             [],
             self::getUserAuthHeaders('user-01')
         );
-        $response->assertOk();
-        self::assertAppApiKeyResource($response, 'app_01', 'Test Reset Key', AppApiKeyType::RESET, AppApiKeyStatus::INVALIDATED);
+        $response->assertNoContent();
+
+        $response->assertNoContent();
+        self::assertTrue(AppApiKey::whereNotNull('invalidated_at')
+            ->whereAppId('app_01')
+            ->whereId('rk_01')
+            ->exists());
     }
 
     public function testNoAccess(): void

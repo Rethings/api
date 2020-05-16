@@ -13,6 +13,7 @@ namespace Rethings\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 use Rethings\Domains\App\Actions\CreateApiKey;
 use Rethings\Domains\App\Actions\InvalidateApiKey;
 use Rethings\Domains\App\App;
@@ -74,14 +75,14 @@ class AppApiKeyController extends Controller
         InvalidateApiKey $action,
         string $appId,
         string $apiKeyId
-    ): AppApiKeyResource {
+    ): Response {
         $app = $appRepository->findActiveById($appId);
         $this->authorize('invalidateApiKey', $app, App::buildNotFoundException($appId));
 
         $apiKey = $appRepository->findAppApiKey($appId, $apiKeyId);
 
-        return AppApiKeyResource::make(
-            $action->execute($apiKey)
-        );
+        $action->execute($apiKey);
+
+        return response()->noContent();
     }
 }
