@@ -13,12 +13,44 @@ namespace Tests;
 
 use Illuminate\Testing\TestResponse;
 use Rethings\Domains\App\App;
+use Rethings\Domains\App\Enums\AppApiKeyStatus;
+use Rethings\Domains\App\Enums\AppApiKeyType;
 use Rethings\Domains\App\Enums\AppStatus;
 use Tests\Concerns\AssertResponse;
 
 trait AssertRethingsResource
 {
     use AssertResponse;
+
+    public static function assertAppApiKeyResource(
+        TestResponse $response,
+        string $appId = 'app_01',
+        string $name = 'Test Reset Key',
+        string $type = AppApiKeyType::RESET,
+        string $status = AppApiKeyStatus::ACTIVE
+    ): void {
+        self::assertJsonResponse(
+            $response,
+            [
+                'key' => static::cbStartsWith($type === AppApiKeyType::RESET ? 'rk_' : 'sk_'),
+                'type' => $type,
+                'name' => $name,
+                'status' => $status,
+                '_links' => self::cbContains([
+                    [
+                        'rel' => 'app',
+                        'href' => route('apps.show', [$appId], false),
+                    ],
+                ], true),
+            ]
+        );
+        self::assertJsonResponseTimestamps(
+            $response,
+            $status === AppStatus::ACTIVE ?
+                ['createdAt'] :
+                ['invalidatedAt', 'createdAt']
+        );
+    }
 
     public static function assertAppResource(
         TestResponse $response,
@@ -46,6 +78,11 @@ trait AssertRethingsResource
                 'publicKey',
             ]
         );
-        self::assertJsonResponseTimestamps($response);
+        self::assertJsonResponseTimestamps(
+            $response,
+            $status === AppStatus::ACTIVE ?
+                ['createdAt', 'updatedAt'] :
+                ['deactivatedAt', 'createdAt', 'updatedAt']
+        );
     }
 }

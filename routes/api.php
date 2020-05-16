@@ -26,5 +26,6 @@ use Rethings\Http\Controllers\AppController;
 Route::middleware(['auth:api', 'actor:user'])->group(function (): void {
     Route::apiResource('apps', AppController::class);
     Route::match(['POST', 'PUT', 'PATCH'], '/apps/{appId}/restore', [AppController::class, 'restore'])->name('apps.restore');
-    Route::apiResource('apps.api-keys', AppApiKeyController::class)->only('index', 'store', 'destroy');
+    Route::apiResource('apps.api-keys', AppApiKeyController::class)
+        ->except('update');
 });

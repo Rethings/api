@@ -12,7 +12,7 @@ declare(strict_types=1);
 namespace Rethings\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Rethings\Domains\App\Actions\CreateApiKey;
 use Rethings\Domains\App\Actions\InvalidateApiKey;
 use Rethings\Domains\App\App;
@@ -26,11 +26,26 @@ class AppApiKeyController extends Controller
     public function index(
         AppRepository $appRepository,
         string $appId
-    ): JsonResource {
+    ): AnonymousResourceCollection {
         $app = $appRepository->findActiveById($appId);
         $this->authorize('readApiKeys', $app, App::buildNotFoundException($appId));
 
         return AppApiKeyResource::collection($app->apiKeys()->withTrashed()->get());
+    }
+
+    public function show(
+        AppRepository $appRepository,
+        string $appId,
+        string $apiKeyId
+    ): AppApiKeyResource {
+        $app = $appRepository->findActiveById($appId);
+        $this->authorize('readApiKey', $app, App::buildNotFoundException($appId));
+
+        $apiKey = $appRepository->findAppApiKey($appId, $apiKeyId);
+
+        return AppApiKeyResource::make(
+            $apiKey
+        );
     }
 
     public function store(
@@ -39,7 +54,7 @@ class AppApiKeyController extends Controller
         AppApiKeyValidator $validator,
         CreateApiKey $action,
         string $appId
-    ): JsonResource {
+    ): AppApiKeyResource {
         $app = $appRepository->findActiveById($appId);
         $this->authorize('createApiKey', $app, App::buildNotFoundException($appId));
 
@@ -59,7 +74,7 @@ class AppApiKeyController extends Controller
         InvalidateApiKey $action,
         string $appId,
         string $apiKeyId
-    ): JsonResource {
+    ): AppApiKeyResource {
         $app = $appRepository->findActiveById($appId);
         $this->authorize('invalidateApiKey', $app, App::buildNotFoundException($appId));
 

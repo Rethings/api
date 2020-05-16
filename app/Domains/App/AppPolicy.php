@@ -55,4 +55,9 @@ final class AppPolicy
     {
         return $app->isOwnedBy($actor);
     }
+
+    public function readApiKey(Actor $actor, App $app): bool
+    {
+        return $app->isOwnedBy($actor);
+    }
 }

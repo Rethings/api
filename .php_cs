@@ -14,7 +14,6 @@ $finder = PhpCsFixer\Finder::create()
     ->exclude('public')
     ->exclude('storage')
     ->exclude('resources/js')
-    ->exclude('resources/lang')
     ->exclude('resources/sass')
     ->exclude('resources/sass')
     ->notPath('_ide_helper.php')
@@ -23,6 +22,7 @@ $finder = PhpCsFixer\Finder::create()
     // Laravel Specific Files
     ->notPath('server.php')
     ->notPath('bootstrap/app.php')
+    ->notPath('public/index.php')
     ->in(__DIR__);
 
 return PhpCsFixer\Config::create()

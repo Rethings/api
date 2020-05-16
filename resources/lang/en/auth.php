@@ -1,7 +1,15 @@
 <?php
+/**
+ * This source file is proprietary and part of Rethings.
+ *
+ * (c) Rethings Inc.
+ *
+ * @see https://www.rethings.io
+ */
+
+declare(strict_types=1);
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Authentication Language Lines
@@ -15,5 +23,4 @@ return [
 
     'failed' => 'These credentials do not match our records.',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
-
 ];

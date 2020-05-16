@@ -71,7 +71,7 @@ trait AssertResponse
     public static function assertJsonResponseTimestamps(TestResponse $response, array $fields = ['createdAt', 'updatedAt']): void
     {
         foreach ($fields as $field) {
-            static::assertNotNull(Arr::get($response, $field));
+            static::assertNotNull(Arr::get($response, $field), 'Missing timestamp: ' . $field);
 
             try {
                 new \DateTimeImmutable(Arr::get($response, $field));
