@@ -25,7 +25,6 @@ class CreateAppsTable extends Migration
             $table->string('name');
             $table->text('public_key');
             $table->actor('owner');
-            $table->timestamp('deactivated_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

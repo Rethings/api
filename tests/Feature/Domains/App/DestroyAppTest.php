@@ -19,7 +19,7 @@ use Tests\Concerns\HasJWT;
 use Tests\Concerns\WithDataset;
 use Tests\TestCase;
 
-class DeactivateAppTest extends TestCase
+class DestroyAppTest extends TestCase
 {
     use RefreshDatabase, WithDataset, AssertRethingsResource, HasJWT;
 
@@ -40,7 +40,7 @@ class DeactivateAppTest extends TestCase
         ];
     }
 
-    public function testWithValidRequest(): void
+    public function testDeactivateRequest(): void
     {
         $response = self::deleteJson(
             route(self::ROUTE_NAME, ['app_01']),
@@ -48,7 +48,24 @@ class DeactivateAppTest extends TestCase
             self::getUserAuthHeaders('user-01')
         );
         $response->assertNoContent();
-        self::assertTrue(App::whereNotNull('deactivated_at')->whereId('app_01')->exists());
+        self::assertSoftDeleted('apps', [
+            'id' => 'app_01',
+        ]);
+    }
+
+    public function testForceDeleteRequest(): void
+    {
+        $response = self::deleteJson(
+            route(self::ROUTE_NAME, ['app_01']),
+            [
+                'force' => true,
+            ],
+            self::getUserAuthHeaders('user-01')
+        );
+        $response->assertNoContent();
+        self::assertDatabaseMissing('apps', [
+            'id' => 'app_01',
+        ]);
     }
 
     public function testNoAccess(): void

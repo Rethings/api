@@ -15,12 +15,13 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 use Rethings\Domains\App\Actions\CreateApp;
-use Rethings\Domains\App\Actions\DeactivateApp;
+use Rethings\Domains\App\Actions\DestroyApp;
 use Rethings\Domains\App\Actions\RestoreApp;
 use Rethings\Domains\App\Actions\UpdateApp;
 use Rethings\Domains\App\App;
 use Rethings\Domains\App\AppRepository;
 use Rethings\Domains\App\AppValidator;
+use Rethings\Http\Requests\DestroyRequest;
 use Rethings\Http\Resources\AppResource;
 
 class AppController extends Controller
@@ -53,20 +54,19 @@ class AppController extends Controller
 
     public function show(string $appId): AppResource
     {
-        $app = App::findOrFail($appId);
+        $app = App::withTrashed()->findOrFail($appId);
         $this->authorize('read', $app, App::buildNotFoundException($appId));
 
         return AppResource::make($app);
     }
 
     public function update(
-        AppRepository $appRepository,
         Request $request,
         UpdateApp $action,
         AppValidator $validator,
         string $appId
     ): AppResource {
-        $app = $appRepository->findActiveById($appId);
+        $app = App::findOrFail($appId);
         $this->authorize('update', $app, App::buildNotFoundException($appId));
 
         $data = $request->all() + $app->toArray();
@@ -81,19 +81,19 @@ class AppController extends Controller
         );
     }
 
-    public function destroy(DeactivateApp $action, string $appId): Response
+    public function destroy(DestroyRequest $request, DestroyApp $action, string $appId): Response
     {
-        $app = App::findOrFail($appId);
-        $this->authorize('deactivate', $app, App::buildNotFoundException($appId));
+        $app = App::withTrashed()->findOrFail($appId);
+        $this->authorize('destroy', $app, App::buildNotFoundException($appId));
 
-        $action->execute($app);
+        $action->execute($app, (bool) $request->get('force', false));
 
         return response()->noContent();
     }
 
     public function restore(RestoreApp $action, string $appId)
     {
-        $app = App::findOrFail($appId);
+        $app = App::withTrashed()->findOrFail($appId);
         $this->authorize('restore', $app, App::buildNotFoundException($appId));
 
         return AppResource::make(

@@ -31,7 +31,7 @@ final class AppPolicy
         return $app->isOwnedBy($actor);
     }
 
-    public function deactivate(Actor $actor, App $app): bool
+    public function destroy(Actor $actor, App $app): bool
     {
         return $app->isOwnedBy($actor);
     }
@@ -46,7 +46,7 @@ final class AppPolicy
         return $app->isOwnedBy($actor);
     }
 
-    public function invalidateApiKey(Actor $actor, App $app): bool
+    public function destroyApiKey(Actor $actor, App $app): bool
     {
         return $app->isOwnedBy($actor);
     }

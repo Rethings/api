@@ -15,20 +15,19 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 use Rethings\Domains\App\Actions\CreateApiKey;
-use Rethings\Domains\App\Actions\InvalidateApiKey;
+use Rethings\Domains\App\Actions\DestroyApiKey;
 use Rethings\Domains\App\App;
 use Rethings\Domains\App\AppApiKeyValidator;
 use Rethings\Domains\App\AppRepository;
 use Rethings\Domains\App\Enums\AppApiKeyType;
+use Rethings\Http\Requests\DestroyRequest;
 use Rethings\Http\Resources\AppApiKeyResource;
 
 class AppApiKeyController extends Controller
 {
-    public function index(
-        AppRepository $appRepository,
-        string $appId
-    ): AnonymousResourceCollection {
-        $app = $appRepository->findActiveById($appId);
+    public function index(string $appId): AnonymousResourceCollection
+    {
+        $app = App::findOrFail($appId);
         $this->authorize('readApiKeys', $app, App::buildNotFoundException($appId));
 
         return AppApiKeyResource::collection($app->apiKeys()->withTrashed()->get());
@@ -39,7 +38,7 @@ class AppApiKeyController extends Controller
         string $appId,
         string $apiKeyId
     ): AppApiKeyResource {
-        $app = $appRepository->findActiveById($appId);
+        $app = App::findOrFail($appId);
         $this->authorize('readApiKey', $app, App::buildNotFoundException($appId));
 
         $apiKey = $appRepository->findAppApiKey($appId, $apiKeyId);
@@ -51,12 +50,11 @@ class AppApiKeyController extends Controller
 
     public function store(
         Request $request,
-        AppRepository $appRepository,
         AppApiKeyValidator $validator,
         CreateApiKey $action,
         string $appId
     ): AppApiKeyResource {
-        $app = $appRepository->findActiveById($appId);
+        $app = App::findOrFail($appId);
         $this->authorize('createApiKey', $app, App::buildNotFoundException($appId));
 
         $data = $validator->validate($request->all());
@@ -71,17 +69,18 @@ class AppApiKeyController extends Controller
     }
 
     public function destroy(
+        DestroyRequest $request,
         AppRepository $appRepository,
-        InvalidateApiKey $action,
+        DestroyApiKey $action,
         string $appId,
         string $apiKeyId
     ): Response {
-        $app = $appRepository->findActiveById($appId);
-        $this->authorize('invalidateApiKey', $app, App::buildNotFoundException($appId));
+        $app = App::findOrFail($appId);
+        $this->authorize('destroyApiKey', $app, App::buildNotFoundException($appId));
 
         $apiKey = $appRepository->findAppApiKey($appId, $apiKeyId);
 
-        $action->execute($apiKey);
+        $action->execute($apiKey, (bool) $request->get('force', false));
 
         return response()->noContent();
     }

@@ -13,14 +13,14 @@ namespace Rethings\Domains\App\Actions;
 
 use Rethings\Domains\App\AppApiKey;
 
-final class InvalidateApiKey
+final class DestroyApiKey
 {
-    public function execute(AppApiKey $apiKey): AppApiKey
+    public function execute(AppApiKey $apiKey, bool $force): void
     {
-        $apiKey->forceFill([
-            'invalidated_at' => now(),
-        ])->save();
-
-        return $apiKey;
+        if ($force) {
+            $apiKey->forceDelete();
+        } else {
+            $apiKey->delete();
+        }
     }
 }

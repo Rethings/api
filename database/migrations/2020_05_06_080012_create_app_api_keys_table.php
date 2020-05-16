@@ -26,7 +26,6 @@ class CreateAppApiKeysTable extends Migration
             $table->string('name');
             $table->string('app_id', 32);
             $table->foreign('app_id')->references('id')->on('apps')->cascadeOnDelete();
-            $table->timestamp('invalidated_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

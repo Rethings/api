@@ -15,11 +15,6 @@ use Rethings\Domains\Auth\Actor;
 
 final class AppRepository
 {
-    public function findActiveById(string $appId): App
-    {
-        return App::whereNull('deactivated_at')->whereId($appId)->firstOrFail();
-    }
-
     public function getAllLiveByActor(Actor $actor)
     {
         return App::byOwner($actor)

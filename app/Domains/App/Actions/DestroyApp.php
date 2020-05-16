@@ -13,14 +13,14 @@ namespace Rethings\Domains\App\Actions;
 
 use Rethings\Domains\App\App;
 
-final class DeactivateApp
+final class DestroyApp
 {
-    public function execute(App $app): App
+    public function execute(App $app, bool $force = false): void
     {
-        $app->forceFill([
-            'deactivated_at' => now(),
-        ])->save();
-
-        return $app;
+        if ($force) {
+            $app->forceDelete();
+        } else {
+            $app->delete();
+        }
     }
 }

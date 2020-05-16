@@ -21,7 +21,7 @@ use Tests\Concerns\HasJWT;
 use Tests\Concerns\WithDataset;
 use Tests\TestCase;
 
-class InvalidateAppApiKeyTest extends TestCase
+class DestroyAppApiKeyTest extends TestCase
 {
     use RefreshDatabase, WithDataset, AssertRethingsResource, HasJWT;
 
@@ -50,7 +50,7 @@ class InvalidateAppApiKeyTest extends TestCase
         ];
     }
 
-    public function testWithValidRequest(): void
+    public function testInvalidateRequest(): void
     {
         $response = self::deleteJson(
             route(self::ROUTE_NAME, ['app_01', 'rk_01']),
@@ -58,12 +58,26 @@ class InvalidateAppApiKeyTest extends TestCase
             self::getUserAuthHeaders('user-01')
         );
         $response->assertNoContent();
+        self::assertSoftDeleted('app_api_keys', [
+            'id' => 'rk_01',
+            'app_id' => 'app_01',
+        ]);
+    }
 
+    public function testForceDeleteRequest(): void
+    {
+        $response = self::deleteJson(
+            route(self::ROUTE_NAME, ['app_01', 'rk_01']),
+            [
+                'force' => true,
+            ],
+            self::getUserAuthHeaders('user-01')
+        );
         $response->assertNoContent();
-        self::assertTrue(AppApiKey::whereNotNull('invalidated_at')
-            ->whereAppId('app_01')
-            ->whereId('rk_01')
-            ->exists());
+        self::assertDatabaseMissing('app_api_keys', [
+            'id' => 'rk_01',
+            'app_id' => 'app_01',
+        ]);
     }
 
     public function testNoAccess(): void
