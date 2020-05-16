@@ -26,6 +26,7 @@ class GenerateJWTCommand extends Command
      * @var string
      */
     protected $signature = 'generate:jwt
+    {key : Private Key}
     {sub : JWT Subject}
     {--jti= : JWT Token ID}
     {--exp= : JWT Token Expiration}
@@ -63,7 +64,7 @@ class GenerateJWTCommand extends Command
             throw new RuntimeException('This command is not allowed in production.');
         }
 
-        $keyName = $this->option('key');
+        $keyName = $this->argument('key');
         if (!$this->filesystem->exists($this->laravel->basePath("keys/$keyName.pem"))) {
             throw new RuntimeException("Key does not exists: $keyName.pem");
         }

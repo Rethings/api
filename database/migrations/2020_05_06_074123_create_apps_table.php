@@ -23,7 +23,6 @@ class CreateAppsTable extends Migration
         Schema::create('apps', function (Blueprint $table): void {
             $table->string('id', 32)->primary();
             $table->string('name');
-            $table->string('type')->nullable();
             $table->text('public_key');
             $table->actor('owner');
             $table->timestamp('deactivated_at')->nullable();

@@ -11,17 +11,27 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Domains\App;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Testing\TestResponse;
+use Tests\AssertRethingsResource;
+use Tests\Concerns\HasJWT;
 use Tests\TestCase;
 
 class CreateAppTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     */
-    public function testExample(): void
-    {
-        $response = $this->get('/');
+    use RefreshDatabase, HasJWT, AssertRethingsResource;
 
-        $response->assertStatus(200);
+    public const ROUTE_NAME = 'apps.store';
+
+    public function testWithValidRequest(): void
+    {
+        /** @var TestResponse $response */
+        $response = self::postJson(route(static::ROUTE_NAME), [
+            'name' => 'Test App',
+            'publicKey' => self::getAppPublicKey(),
+        ], self::getUserAuthHeaders('user-01'));
+        $response->assertCreated();
+
+        self::assertAppResource($response);
     }
 }

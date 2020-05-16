@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Rethings\Domains\App\Actions\CreateApiKey;
 use Rethings\Domains\App\Actions\InvalidateApiKey;
+use Rethings\Domains\App\App;
 use Rethings\Domains\App\AppApiKeyValidator;
 use Rethings\Domains\App\AppRepository;
 use Rethings\Domains\App\Enums\AppApiKeyType;
@@ -27,7 +28,7 @@ class AppApiKeyController extends Controller
         string $appId
     ): JsonResource {
         $app = $appRepository->findActiveById($appId);
-        $this->authorize('readApiKeys', $app);
+        $this->authorize('readApiKeys', $app, App::buildNotFoundException($appId));
 
         return AppApiKeyResource::collection($app->apiKeys()->withTrashed()->get());
     }
@@ -40,7 +41,7 @@ class AppApiKeyController extends Controller
         string $appId
     ): JsonResource {
         $app = $appRepository->findActiveById($appId);
-        $this->authorize('createApiKey', $app);
+        $this->authorize('createApiKey', $app, App::buildNotFoundException($appId));
 
         $data = $validator->validate($request->all());
 
@@ -60,7 +61,7 @@ class AppApiKeyController extends Controller
         string $apiKeyId
     ): JsonResource {
         $app = $appRepository->findActiveById($appId);
-        $this->authorize('invalidateApiKey', $app);
+        $this->authorize('invalidateApiKey', $app, App::buildNotFoundException($appId));
 
         $apiKey = $appRepository->findAppApiKey($appId, $apiKeyId);
 

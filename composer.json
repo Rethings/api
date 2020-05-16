@@ -71,10 +71,13 @@
             "@php artisan ide-helper:meta"
         ],
         "create-test-consumer": [
-            "@php artisan generate:jwt consumer-01 --key=app_key"
+            "@php artisan generate:jwt test_app_key consumer-01"
         ],
         "create-test-user": [
-            "@php artisan generate:jwt user-01 --key=test_key"
+            "@php artisan generate:jwt test_platform_key user-01"
+        ],
+        "test": [
+            "@php ./vendor/bin/phpunit --testdox"
         ],
         "diff-files": "f() { git diff --name-only --diff-filter=ACMRTUXB $1 | grep -i \\.php$ | grep -vi resources/ ; }; f",
         "cs": "f() { if test \"$1\" ; then php-cs-fixer fix --dry-run --config=.php_cs -v --using-cache=no --diff --diff-format=udiff --ansi $1 ; else echo \"Nothing to fix\" ; fi ; }; f",

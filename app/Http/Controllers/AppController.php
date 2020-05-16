@@ -53,7 +53,7 @@ class AppController extends Controller
     public function show(string $appId): AppResource
     {
         $app = App::findOrFail($appId);
-        $this->authorize('read', $app);
+        $this->authorize('read', $app, App::buildNotFoundException($appId));
 
         return AppResource::make($app);
     }
@@ -66,7 +66,7 @@ class AppController extends Controller
         string $appId
     ): AppResource {
         $app = $appRepository->findActiveById($appId);
-        $this->authorize('update', $app);
+        $this->authorize('update', $app, App::buildNotFoundException($appId));
 
         $data = $request->all() + $app->toArray();
         $data = $validator->validate($data);
@@ -83,7 +83,7 @@ class AppController extends Controller
     public function destroy(DeactivateApp $action, string $appId): AppResource
     {
         $app = App::findOrFail($appId);
-        $this->authorize('deactivate', $app);
+        $this->authorize('deactivate', $app, App::buildNotFoundException($appId));
 
         return AppResource::make(
             $action->execute($app)
@@ -93,7 +93,7 @@ class AppController extends Controller
     public function restore(RestoreApp $action, string $appId)
     {
         $app = App::findOrFail($appId);
-        $this->authorize('restore', $app);
+        $this->authorize('restore', $app, App::buildNotFoundException($appId));
 
         return AppResource::make(
             $action->execute($app)
