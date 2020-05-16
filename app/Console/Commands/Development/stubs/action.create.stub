@@ -1,0 +1,15 @@
+<?php
+
+declare(strict_types=1);
+
+namespace DummyNamespace;
+
+use Rethings\Domains\Auth\Actor;
+
+final class DummyClass
+{
+    public function execute(Actor $owner, string $property): Model
+    {
+
+    }
+}

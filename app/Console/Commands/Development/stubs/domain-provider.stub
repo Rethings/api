@@ -1,0 +1,38 @@
+<?php
+
+declare(strict_types=1);
+
+namespace DummyNamespace;
+
+use Rethings\Providers\DomainServiceProvider;
+
+final class DummyClass extends DomainServiceProvider
+{
+    public function listeners(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public function aliases(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public function policies(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public function morphMap(): array
+    {
+        return [
+            //
+        ];
+    }
+}
