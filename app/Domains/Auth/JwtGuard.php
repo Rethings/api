@@ -28,10 +28,6 @@ class JwtGuard
 
     public function __invoke(Request $request)
     {
-        if ($user = $this->auth->guard('web')->user()) {
-            return $user;
-        }
-
         $bearerToken = $request->bearerToken();
         if (!$bearerToken) {
             return null;

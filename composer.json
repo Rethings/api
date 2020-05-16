@@ -14,7 +14,6 @@
         "guzzlehttp/guzzle": "^6.3",
         "laravel/framework": "^7.0",
         "laravel/homestead": "^10.8",
-        "laravel/sanctum": "^2.3",
         "laravel/tinker": "^2.0",
         "lcobucci/jwt": "^3.3",
         "propaganistas/laravel-phone": "^4.2"
