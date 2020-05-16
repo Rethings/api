@@ -35,7 +35,7 @@ class App extends Model
 
     public function getStatusAttribute(): AppStatus
     {
-        return $this->deactivatedAt === null ?
+        return $this->deletedAt === null ?
             new AppStatus(AppStatus::ACTIVE) :
             new AppStatus(AppStatus::INACTIVE);
     }

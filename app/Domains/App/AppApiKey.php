@@ -55,7 +55,7 @@ class AppApiKey extends Model
 
     public function getStatusAttribute(): AppApiKeyStatus
     {
-        return $this->invalidatedAt === null ?
+        return $this->deletedAt === null ?
             new AppApiKeyStatus(AppApiKeyStatus::ACTIVE) :
             new AppApiKeyStatus(AppApiKeyStatus::INVALIDATED);
     }
