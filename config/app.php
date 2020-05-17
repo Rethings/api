@@ -180,6 +180,7 @@ return [
 
         // Domain Service Providers
         Rethings\Domains\App\AppDomainServiceProvider::class,
+        Rethings\Domains\Device\DeviceDomainServiceProvider::class,
     ],
 
     /*

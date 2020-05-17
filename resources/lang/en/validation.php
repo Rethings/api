@@ -126,6 +126,10 @@ return [
     'url' => 'The :attribute format is invalid.',
     'uuid' => 'The :attribute must be a valid UUID.',
 
+    // Custom validation rules
+    'metadata' => 'The :attribute must be a valid object or array.',
+    'exists_external_id' => 'The provided :resource ID already exists.',
+
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Language Lines

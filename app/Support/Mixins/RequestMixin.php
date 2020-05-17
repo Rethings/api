@@ -15,7 +15,7 @@ use Rethings\Domains\App\App;
 
 final class RequestMixin
 {
-    public function hasApp(): callable
+    public function hasAppId(): callable
     {
         return function (): bool {
             return $this->getAppId() !== null;
@@ -31,7 +31,7 @@ final class RequestMixin
 
     public function app()
     {
-        return function (): App {
+        return function (): ?App {
             static $instance;
             if (!isset($instance)) {
                 $instance = $this->getAppId() ?

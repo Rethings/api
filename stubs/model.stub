@@ -3,9 +3,14 @@
 namespace {{ namespace }};
 
 use Illuminate\Database\Eloquent\Model;
+use Rethings\Support\Database\Concerns\CamelCasedAttributes;
+use Rethings\Support\Database\Concerns\StringKey;
+use Rethings\Support\Database\Concerns\ThrowsNotFound;
 
 class {{ class }} extends Model
 {
-    use StringKey;
+    use StringKey,
+        CamelCasedAttributes,
+        ThrowsNotFound;
 
 }

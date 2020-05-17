@@ -16,6 +16,7 @@ use Rethings\Domains\App\App;
 use Rethings\Domains\App\Enums\AppApiKeyStatus;
 use Rethings\Domains\App\Enums\AppApiKeyType;
 use Rethings\Domains\App\Enums\AppStatus;
+use Rethings\Domains\Device\Device;
 use Tests\Concerns\AssertResponse;
 
 trait AssertRethingsResource
@@ -84,5 +85,30 @@ trait AssertRethingsResource
                 ['createdAt', 'updatedAt'] :
                 ['deactivatedAt', 'createdAt', 'updatedAt']
         );
+    }
+
+    public static function assertDeviceResource(
+        TestResponse $response,
+        string $externalId = null,
+        string $name = 'Test Device',
+        array $metadata = ['foo' => 'bar'],
+        array $tags = ['sample']
+    ): void {
+        self::assertJsonResponse(
+            $response,
+            [
+                'id' => $externalId ?? static::cbStartsWith(Device::getKeyPrefix()),
+                'name' => $name,
+                'metadata' => $metadata,
+                'tags' => $tags,
+                '_links' => self::cbContains([
+                    [
+                        'rel' => 'self',
+                        'href' => route('devices.show', [$response->json('id')], false),
+                    ],
+                ], true),
+            ]
+        );
+        self::assertJsonResponseTimestamps($response, ['createdAt', 'updatedAt']);
     }
 }

@@ -48,7 +48,7 @@ trait HasJWT
     public static function getConsumerAuthHeaders(string $id, string $appId): array
     {
         return [
-            'Authorization' => 'Bearer ' . static::getUserToken($id),
+            'Authorization' => 'Bearer ' . static::getConsumerToken($id),
             'X-APP-ID' => $appId,
         ];
     }

@@ -32,7 +32,7 @@ class JwtGuard
         if (!$bearerToken) {
             return null;
         }
-        if ($request->hasApp()) {
+        if ($request->hasAppId()) {
             /** @var App $app */
             $app = $request->app();
             $publicKey = $app->publicKey;
