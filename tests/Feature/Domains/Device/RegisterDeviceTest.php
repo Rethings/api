@@ -14,15 +14,15 @@ namespace Tests\Feature\Domains\Device;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\TestResponse;
 use Rethings\Domains\App\App;
-use Rethings\Domains\Auth\ActorType;
 use Tests\AssertRethingsResource;
 use Tests\Concerns\HasJWT;
 use Tests\Concerns\WithDataset;
+use Tests\RethingsDataSamples;
 use Tests\TestCase;
 
 class RegisterDeviceTest extends TestCase
 {
-    use RefreshDatabase, HasJWT, WithDataset, AssertRethingsResource;
+    use RefreshDatabase, HasJWT, WithDataset, AssertRethingsResource, RethingsDataSamples;
 
     public const ROUTE_NAME = 'devices.store';
 
@@ -30,13 +30,7 @@ class RegisterDeviceTest extends TestCase
     {
         return [
             App::class => [
-                [
-                    'id' => 'app_01',
-                    'name' => 'Test App',
-                    'publicKey' => self::getAppPublicKey(),
-                    'ownerId' => 'user-01',
-                    'ownerType' => ActorType::USER,
-                ],
+                self::createAppSample(),
             ],
         ];
     }

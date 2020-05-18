@@ -21,18 +21,24 @@ use Rethings\Http\Resources\DeviceResource;
 
 class DeviceController extends Controller
 {
+    private DeviceRepository $deviceRepository;
+
+    public function __construct(Request $request)
+    {
+        $this->deviceRepository = new DeviceRepository($request->app());
+    }
+
     public function store(
-        DeviceRepository $deviceRepository,
         Request $request,
         RegisterDevice $action,
         DeviceValidator $validator,
         string $deviceExternalId = null
-    ) {
+    ): DeviceResource {
         $this->authorize('register', Device::class);
 
         if (
             $deviceExternalId &&
-            $deviceRepository->existsByExternalId($deviceExternalId, $request->getAppId())
+            $this->deviceRepository->existsByExternalId($deviceExternalId)
         ) {
             throw ValidationException::withMessages([
                 'id' => trans('validation.exists_external_id', ['resource' => 'Device']),
@@ -53,7 +59,11 @@ class DeviceController extends Controller
         );
     }
 
-    public function show(Request $request, string $deviceExternalId): void
+    public function show(string $deviceExternalId): DeviceResource
     {
+        $device = $this->deviceRepository->findByExternalId($deviceExternalId);
+        $this->authorize('read', $device, Device::buildNotFoundException($deviceExternalId));
+
+        return DeviceResource::make($device);
     }
 }

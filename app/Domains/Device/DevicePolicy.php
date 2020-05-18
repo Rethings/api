@@ -20,4 +20,9 @@ final class DevicePolicy
     {
         return $actor->getActorType()->is(ActorType::CONSUMER);
     }
+
+    public function read(Actor $actor, Device $device)
+    {
+        return $device->isOwnedBy($actor);
+    }
 }

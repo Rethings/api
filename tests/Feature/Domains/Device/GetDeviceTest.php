@@ -9,22 +9,22 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Domains\App;
+namespace Tests\Feature\Domains\Device;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Testing\TestResponse;
 use Rethings\Domains\App\App;
+use Rethings\Domains\Device\Device;
 use Tests\AssertRethingsResource;
 use Tests\Concerns\HasJWT;
 use Tests\Concerns\WithDataset;
 use Tests\RethingsDataSamples;
 use Tests\TestCase;
 
-class ListAppsTest extends TestCase
+class GetDeviceTest extends TestCase
 {
     use RefreshDatabase, WithDataset, AssertRethingsResource, HasJWT, RethingsDataSamples;
 
-    public const ROUTE_NAME = 'apps.index';
+    public const ROUTE_NAME = 'devices.show';
 
     public function createDataset(): array
     {
@@ -32,29 +32,28 @@ class ListAppsTest extends TestCase
             App::class => [
                 self::createAppSample(),
             ],
+            Device::class => [
+                self::createDeviceSample(),
+            ],
         ];
     }
 
     public function testWithValidRequest(): void
     {
         $response = self::getJson(
-            route(self::ROUTE_NAME),
-            self::getUserAuthHeaders('user-01')
+            route(self::ROUTE_NAME, ['dev_01']),
+            self::getConsumerAuthHeaders('consumer-01', 'app_01')
         );
         $response->assertOk();
-        $response->assertJsonCount(1);
-        self::assertJsonCollectionResponse($response, function (TestResponse $subItem): void {
-            self::assertAppResource($subItem);
-        });
+        self::assertDeviceResource($response);
     }
 
-    public function testNotOwned(): void
+    public function testNoAccess(): void
     {
         $response = self::getJson(
-            route(self::ROUTE_NAME),
-            self::getUserAuthHeaders('user-02')
+            route(self::ROUTE_NAME, ['dev_01']),
+            self::getConsumerAuthHeaders('consumer-02', 'app_01')
         );
-        $response->assertOk();
-        $response->assertJsonCount(0);
+        $response->assertNotFound();
     }
 }

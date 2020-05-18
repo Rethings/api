@@ -11,10 +11,26 @@ declare(strict_types=1);
 
 namespace Rethings\Domains\Device;
 
+use Rethings\Domains\App\App;
+
 final class DeviceRepository
 {
-    public function existsByExternalId(string $externalId, string $appId): bool
+    private App $app;
+
+    public function __construct(App $app)
     {
-        return Device::whereExternalId($externalId)->whereAppId($appId)->exists();
+        $this->app = $app;
+    }
+
+    public function findByExternalId(string $externalId): Device
+    {
+        return Device::whereExternalId($externalId)
+            ->whereAppId($this->app->getKey())->firstOrFail();
+    }
+
+    public function existsByExternalId(string $externalId): bool
+    {
+        return Device::whereExternalId($externalId)
+            ->whereAppId($this->app->getKey())->exists();
     }
 }

@@ -15,16 +15,15 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\TestResponse;
 use Rethings\Domains\App\App;
 use Rethings\Domains\App\AppApiKey;
-use Rethings\Domains\App\Enums\AppApiKeyType;
-use Rethings\Domains\Auth\ActorType;
 use Tests\AssertRethingsResource;
 use Tests\Concerns\HasJWT;
 use Tests\Concerns\WithDataset;
+use Tests\RethingsDataSamples;
 use Tests\TestCase;
 
 class GetAppApiKeysTest extends TestCase
 {
-    use RefreshDatabase, WithDataset, AssertRethingsResource, HasJWT;
+    use RefreshDatabase, WithDataset, AssertRethingsResource, HasJWT, RethingsDataSamples;
 
     public const ROUTE_NAME = 'apps.api-keys.index';
 
@@ -32,21 +31,10 @@ class GetAppApiKeysTest extends TestCase
     {
         return [
             App::class => [
-                [
-                    'id' => 'app_01',
-                    'name' => 'Test App',
-                    'publicKey' => self::getAppPublicKey(),
-                    'ownerId' => 'user-01',
-                    'ownerType' => ActorType::USER,
-                ],
+                self::createAppSample(),
             ],
             AppApiKey::class => [
-                [
-                    'id' => 'rk_01',
-                    'type' => new AppApiKeyType(AppApiKeyType::RESET),
-                    'name' => 'Test Reset Key',
-                    'appId' => 'app_01',
-                ],
+                self::createAppApiKeySample(),
             ],
         ];
     }
