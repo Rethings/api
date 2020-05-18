@@ -25,13 +25,15 @@ class CreateDevicesTable extends Migration
             $table->string('external_id');
             $table->string('app_id', 32);
             $table->foreign('app_id')->references('id')->on('apps')->cascadeOnDelete();
-            $table->unique(['external_id', 'app_id']);
 
             $table->string('name')->nullable();
             $table->json('metadata')->nullable();
             $table->json('tags')->nullable();
             $table->actor('owner');
             $table->timestamps();
+            $table->softDeletes();
+
+            $table->unique(['external_id', 'app_id', 'deleted_at']);
         });
     }
 

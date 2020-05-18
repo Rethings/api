@@ -30,4 +30,9 @@ final class DevicePolicy
     {
         return $device->isOwnedBy($actor);
     }
+
+    public function destroy(Actor $actor, Device $device)
+    {
+        return $device->isOwnedBy($actor);
+    }
 }

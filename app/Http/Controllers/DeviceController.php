@@ -12,12 +12,15 @@ declare(strict_types=1);
 namespace Rethings\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
+use Rethings\Domains\Device\Actions\DestroyDevice;
 use Rethings\Domains\Device\Actions\RegisterDevice;
 use Rethings\Domains\Device\Actions\UpdateDevice;
 use Rethings\Domains\Device\Device;
 use Rethings\Domains\Device\DeviceRepository;
 use Rethings\Domains\Device\DeviceValidator;
+use Rethings\Http\Requests\DestroyRequest;
 use Rethings\Http\Resources\DeviceResource;
 
 class DeviceController extends Controller
@@ -109,5 +112,15 @@ class DeviceController extends Controller
                 $data['tags'] ?? []
             )
         );
+    }
+
+    public function destroy(DestroyRequest $request, DestroyDevice $action, string $deviceExternalId): Response
+    {
+        $device = $this->deviceRepository->findByExternalId($deviceExternalId);
+        $this->authorize('destroy', $device, Device::buildNotFoundException($deviceExternalId));
+
+        $action->execute($device, (bool) $request->get('force', false));
+
+        return response()->noContent();
     }
 }

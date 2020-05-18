@@ -13,6 +13,7 @@ namespace Rethings\Domains\Device;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Rethings\Domains\App\App;
 use Rethings\Support\Database\Concerns\CamelCasedAttributes;
 use Rethings\Support\Database\Concerns\HasExternalId;
@@ -24,7 +25,8 @@ class Device extends Model
     use HasExternalId,
         CamelCasedAttributes,
         ThrowsNotFound,
-        HasOwner;
+        HasOwner,
+        SoftDeletes;
 
     protected $casts = [
         'metadata' => 'array',

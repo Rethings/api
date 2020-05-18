@@ -35,9 +35,8 @@ Route::middleware(['auth:api', 'actor:user'])->group(function (): void {
 });
 
 Route::middleware(['auth:api', 'actor:consumer'])->group(function (): void {
-    Route::post('/devices/{device?}', [DeviceController::class, 'store'])->name('devices.store');
-    Route::apiResource('devices', DeviceController::class)
-        ->only('show');
+    Route::apiResource('devices', DeviceController::class)->except('update', 'store');
     Route::patch('/devices/{device}', [DeviceController::class, 'patch'])->name('devices.patch');
     Route::put('/devices/{device}', [DeviceController::class, 'update'])->name('devices.update');
+    Route::post('/devices/{device?}', [DeviceController::class, 'store'])->name('devices.store');
 });
