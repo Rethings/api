@@ -14,6 +14,7 @@ namespace Rethings\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Rethings\Domains\Device\Actions\RegisterDevice;
+use Rethings\Domains\Device\Actions\UpdateDevice;
 use Rethings\Domains\Device\Device;
 use Rethings\Domains\Device\DeviceRepository;
 use Rethings\Domains\Device\DeviceValidator;
@@ -65,5 +66,48 @@ class DeviceController extends Controller
         $this->authorize('read', $device, Device::buildNotFoundException($deviceExternalId));
 
         return DeviceResource::make($device);
+    }
+
+    public function update(
+        Request $request,
+        DeviceValidator $validator,
+        UpdateDevice $action,
+        string $deviceExternalId
+    ): DeviceResource {
+        $device = $this->deviceRepository->findByExternalId($deviceExternalId);
+        $this->authorize('update', $device, Device::buildNotFoundException($deviceExternalId));
+
+        $data = $validator->validate($request->all());
+
+        return DeviceResource::make(
+            $action->execute(
+                $device,
+                $data['name'] ?? null,
+                $data['metadata'] ?? [],
+                $data['tags'] ?? []
+            )
+        );
+    }
+
+    public function patch(
+        Request $request,
+        DeviceValidator $validator,
+        UpdateDevice $action,
+        string $deviceExternalId
+    ): DeviceResource {
+        $device = $this->deviceRepository->findByExternalId($deviceExternalId);
+        $this->authorize('update', $device, Device::buildNotFoundException($deviceExternalId));
+
+        $data = $request->all() + $device->toArray();
+        $data = $validator->validate($data);
+
+        return DeviceResource::make(
+            $action->execute(
+                $device,
+                $data['name'] ?? null,
+                $data['metadata'] ?? [],
+                $data['tags'] ?? []
+            )
+        );
     }
 }

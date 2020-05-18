@@ -9,22 +9,23 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Domains\App;
+namespace Tests\Feature\Domains\Device;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\TestResponse;
 use Rethings\Domains\App\App;
+use Rethings\Domains\Device\Device;
 use Tests\AssertRethingsResource;
 use Tests\Concerns\HasJWT;
 use Tests\Concerns\WithDataset;
 use Tests\RethingsDataSamples;
 use Tests\TestCase;
 
-class UpdateAppTest extends TestCase
+class UpdateDeviceTest extends TestCase
 {
     use RefreshDatabase, WithDataset, AssertRethingsResource, HasJWT, RethingsDataSamples;
 
-    public const ROUTE_NAME = 'apps.update';
+    public const ROUTE_NAME = 'devices.update';
 
     public function createDataset(): array
     {
@@ -32,46 +33,44 @@ class UpdateAppTest extends TestCase
             App::class => [
                 self::createAppSample(),
             ],
+            Device::class => [
+                self::createDeviceSample(),
+            ],
         ];
     }
 
     public function testWithValidPutRequest(): void
     {
         /** @var TestResponse $response */
-        $response = self::putJson(route(static::ROUTE_NAME, ['app_01']), [
-            'name' => 'Updated App',
-            'publicKey' => self::getAppPublicKey(),
-        ], self::getUserAuthHeaders('user-01'));
+        $response = self::putJson(route(static::ROUTE_NAME, ['dev_01']), [
+            'name' => 'Updated Device',
+        ], self::getConsumerAuthHeaders('consumer-01', 'app_01'));
         $response->assertOk();
-        self::assertAppResource($response, 'Updated App');
-    }
-
-    public function testWithInvalidPutRequest(): void
-    {
-        /** @var TestResponse $response */
-        $response = self::putJson(route(static::ROUTE_NAME, ['app_01']), [
-            'name' => 'Updated App',
-        ], self::getUserAuthHeaders('user-01'));
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrors(['publicKey']);
+        self::assertDeviceResource(
+            $response,
+            null,
+            'Updated Device',
+            [],
+            []
+        );
     }
 
     public function testWithValidPatchRequest(): void
     {
         /** @var TestResponse $response */
-        $response = self::patchJson(route(static::ROUTE_NAME, ['app_01']), [
-            'name' => 'Updated App',
-        ], self::getUserAuthHeaders('user-01'));
+        $response = self::patchJson(route(static::ROUTE_NAME, ['dev_01']), [
+            'name' => 'Updated Device',
+        ], self::getConsumerAuthHeaders('consumer-01', 'app_01'));
         $response->assertOk();
-        self::assertAppResource($response, 'Updated App');
+        self::assertDeviceResource($response, null, 'Updated Device');
     }
 
     public function testNoAccess(): void
     {
         /** @var TestResponse $response */
-        $response = self::patchJson(route(static::ROUTE_NAME, ['app_01']), [
+        $response = self::patchJson(route(static::ROUTE_NAME, ['dev_01']), [
             'name' => 'Updated App',
-        ], self::getUserAuthHeaders('user-02'));
+        ], self::getConsumerAuthHeaders('consumer-02', 'app_01'));
         $response->assertNotFound();
     }
 }

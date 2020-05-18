@@ -25,4 +25,9 @@ final class DevicePolicy
     {
         return $device->isOwnedBy($actor);
     }
+
+    public function update(Actor $actor, Device $device)
+    {
+        return $device->isOwnedBy($actor);
+    }
 }

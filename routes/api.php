@@ -25,14 +25,19 @@ use Rethings\Http\Controllers\DeviceController;
 */
 
 Route::middleware(['auth:api', 'actor:user'])->group(function (): void {
-    Route::apiResource('apps', AppController::class);
-    Route::post('/apps/{appId}/restore', [AppController::class, 'restore'])->name('apps.restore');
+    Route::apiResource('apps', AppController::class)->except('update');
+    Route::patch('/apps/{app}', [AppController::class, 'patch'])->name('apps.patch');
+    Route::put('/apps/{app}', [AppController::class, 'update'])->name('apps.update');
+
+    Route::post('/apps/{app}/restore', [AppController::class, 'restore'])->name('apps.restore');
     Route::apiResource('apps.api-keys', AppApiKeyController::class)
         ->except('update');
 });
 
 Route::middleware(['auth:api', 'actor:consumer'])->group(function (): void {
-    Route::post('/devices/{deviceId?}', [DeviceController::class, 'store'])->name('devices.store');
+    Route::post('/devices/{device?}', [DeviceController::class, 'store'])->name('devices.store');
     Route::apiResource('devices', DeviceController::class)
         ->only('show');
+    Route::patch('/devices/{device}', [DeviceController::class, 'patch'])->name('devices.patch');
+    Route::put('/devices/{device}', [DeviceController::class, 'update'])->name('devices.update');
 });

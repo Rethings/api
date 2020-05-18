@@ -68,6 +68,25 @@ class AppController extends Controller
     ): AppResource {
         $app = App::findOrFail($appId);
         $this->authorize('update', $app, App::buildNotFoundException($appId));
+        $data = $validator->validate($request->all());
+
+        return AppResource::make(
+            $action->execute(
+                $app,
+                $data['name'],
+                $data['publicKey']
+            )
+        );
+    }
+
+    public function patch(
+        Request $request,
+        UpdateApp $action,
+        AppValidator $validator,
+        string $appId
+    ): AppResource {
+        $app = App::findOrFail($appId);
+        $this->authorize('update', $app, App::buildNotFoundException($appId));
 
         $data = $request->all() + $app->toArray();
         $data = $validator->validate($data);
