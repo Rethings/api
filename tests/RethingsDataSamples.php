@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use Illuminate\Support\Str;
 use Rethings\Domains\App\Enums\AppApiKeyType;
 use Rethings\Domains\Auth\ActorType;
 
@@ -42,6 +43,7 @@ trait RethingsDataSamples
         return $attributes + [
                 'externalId' => 'dev_01',
                 'name' => 'Test Device',
+                'namespace' => Str::random(24),
                 'metadata' => ['foo' => 'bar'],
                 'tags' => ['sample'],
                 'appId' => 'app_01',

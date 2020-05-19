@@ -22,6 +22,7 @@ use Rethings\Domains\Device\DeviceRepository;
 use Rethings\Domains\Device\DeviceValidator;
 use Rethings\Http\Requests\DestroyRequest;
 use Rethings\Http\Resources\DeviceResource;
+use Rethings\Http\Resources\MqttCredentialResource;
 
 class DeviceController extends Controller
 {
@@ -122,5 +123,13 @@ class DeviceController extends Controller
         $action->execute($device, (bool) $request->get('force', false));
 
         return response()->noContent();
+    }
+
+    public function getCredential(string $deviceExternalId): MqttCredentialResource
+    {
+        $device = $this->deviceRepository->findByExternalId($deviceExternalId);
+        $this->authorize('read', $device, Device::buildNotFoundException($deviceExternalId));
+
+        return MqttCredentialResource::make($device->mqttCredentials()->first());
     }
 }

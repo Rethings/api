@@ -22,6 +22,7 @@ class CreateDevicesTable extends Migration
     {
         Schema::create('devices', function (Blueprint $table): void {
             $table->id();
+            $table->string('namespace')->unique();
             $table->string('external_id');
             $table->string('app_id', 32);
             $table->foreign('app_id')->references('id')->on('apps')->cascadeOnDelete();

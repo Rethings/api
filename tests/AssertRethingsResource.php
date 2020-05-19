@@ -11,12 +11,14 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use Illuminate\Support\Arr;
 use Illuminate\Testing\TestResponse;
 use Rethings\Domains\App\App;
 use Rethings\Domains\App\Enums\AppApiKeyStatus;
 use Rethings\Domains\App\Enums\AppApiKeyType;
 use Rethings\Domains\App\Enums\AppStatus;
 use Rethings\Domains\Device\Device;
+use Rethings\Domains\Mqtt\Enum\AuthenticationMethod;
 use Tests\Concerns\AssertResponse;
 
 trait AssertRethingsResource
@@ -107,8 +109,40 @@ trait AssertRethingsResource
                         'href' => route('devices.show', [$response->json('id')], false),
                     ],
                 ], true),
+            ],
+            [
+                'namespace',
             ]
         );
         self::assertJsonResponseTimestamps($response, ['createdAt', 'updatedAt']);
+    }
+
+    public static function assertMqttCredentialResource(
+        TestResponse $response,
+        string $idPrefix = null,
+        string $username = null,
+        string $authenticationMethod = AuthenticationMethod::USERNAME,
+        array $publishableTopics = [],
+        array $subscribableTopics = []
+    ): void {
+        self::assertJsonResponse(
+            $response,
+            [
+                'id' => static::cbStartsWith($idPrefix),
+                'username' => $username ?? static::cbStartsWith($idPrefix),
+                'authenticationMethod' => $authenticationMethod,
+                'publishableTopics' => $publishableTopics,
+                'subscribableTopics' => $subscribableTopics,
+            ],
+            [
+                $authenticationMethod === AuthenticationMethod::USERNAME ?
+                    'pem' : 'username',
+            ]
+        );
+        self::assertJsonResponseTimestamps($response, ['createdAt']);
+
+        $id = $response['id'];
+        $randomChars = Arr::last(explode('_', $id));
+        self::assertSame(6, mb_strlen($randomChars), 'Invalid random characters length.');
     }
 }

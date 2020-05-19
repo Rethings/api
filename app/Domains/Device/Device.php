@@ -13,8 +13,11 @@ namespace Rethings\Domains\Device;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use LogicException;
 use Rethings\Domains\App\App;
+use Rethings\Domains\Mqtt\MqttCredential;
 use Rethings\Support\Database\Concerns\CamelCasedAttributes;
 use Rethings\Support\Database\Concerns\HasExternalId;
 use Rethings\Support\Database\Concerns\HasOwner;
@@ -38,8 +41,21 @@ class Device extends Model
         return 'dev_';
     }
 
+    public static function getPemAttribute(): string
+    {
+        throw new LogicException('Unsupported authentication method (yet)');
+    }
+
     public function app(): BelongsTo
     {
         return $this->belongsTo(App::class);
+    }
+
+    public function mqttCredentials(): BelongsToMany
+    {
+        return $this
+            ->belongsToMany(MqttCredential::class, 'device_mqtt_credentials')
+            ->orderByDesc('created_at')
+            ->withTimestamps();
     }
 }

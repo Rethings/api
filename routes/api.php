@@ -39,4 +39,5 @@ Route::middleware(['auth:api', 'actor:consumer'])->group(function (): void {
     Route::patch('/devices/{device}', [DeviceController::class, 'patch'])->name('devices.patch');
     Route::put('/devices/{device}', [DeviceController::class, 'update'])->name('devices.update');
     Route::post('/devices/{device?}', [DeviceController::class, 'store'])->name('devices.store');
+    Route::get('/devices/{device?}/mqtt-credential', [DeviceController::class, 'getCredential'])->name('devices.get-credential');
 });
